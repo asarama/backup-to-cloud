@@ -3,7 +3,6 @@ module.exports = {
     service: {
         name: "Backup App",
         maintainer: {
-            name: "TEMP NAME",
             email: {
                 enabled: false,
                 host: "127.0.0.1",
@@ -17,13 +16,16 @@ module.exports = {
         }
     },
     backup: {
-        storage: "google",
         schedule: "30 3 * * *",
         directories: [
             "./"
-        ]
-    },
-    google: {
-        bucket: "some_bucket"
+        ],
+        targets: [
+            {
+                provider: "google",
+                bucket: "some_bucket",
+                json_path: "./google.json"
+            }
+        ],
     }
 }
