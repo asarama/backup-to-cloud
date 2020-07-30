@@ -5,6 +5,7 @@ module.exports = {
         maintainer: {
             name: "TEMP NAME",
             email: {
+                enabled: false,
                 host: "127.0.0.1",
                 port: 0,
                 secure: true,

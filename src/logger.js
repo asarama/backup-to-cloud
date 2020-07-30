@@ -3,6 +3,7 @@ const config = require('./config');
 const nodemailer = require('nodemailer');
 const schedule = require('node-schedule');
 const fs = require('fs');
+const { timeStamp } = require('console');
 
 //This class is used to log information to a set of log files
 class Logger {
@@ -12,7 +13,10 @@ class Logger {
         this.fs = require('fs');
         this.fileDirectory = options.fileDirectory || (`${__dirname}/logs`);
         this.serviceName = options.serviceName || config.service.name;
-        this.emailTransporter = nodemailer.createTransport(config.service.maintainer.email);
+
+        if (config.service.maintainer.email.enabled) {
+            this.emailTransporter = nodemailer.createTransport(config.service.maintainer.email);
+        }
 
         //Schedule delete old scripts function once everyday
         this.deleteOldLogsJob = schedule.scheduleJob({
@@ -109,6 +113,12 @@ class Logger {
     */
 
     email(message) {
+
+        if (!config.service.maintainer.email.enabled) {
+            this.info(`Email message: ${message}`)
+            this.info(`If you'd like to receive these messages via email update your config file.`)
+            return
+        }
 
         let mailOptions = {
             from: config.service.maintainer.email.auth.user,
