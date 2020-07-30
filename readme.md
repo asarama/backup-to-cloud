@@ -1,4 +1,4 @@
-# Intro
+# Backup-to-Cloud
 This app archives a set of directories and uploads them to a cloud storage provider. This is a work in progress...
 
 ## TODO
@@ -23,8 +23,11 @@ This app archives a set of directories and uploads them to a cloud storage provi
 
 ## Windows
 
-Run `npm run install-windows`
-This will install a service called "Backup to Cloud - {YOUR SERVICE NAME HERE}"
+``` npm i node-windows```
+
+```npm run install-windows```
+
+This will install a service called "Backup to Cloud - YOUR_SERVICE_NAME_HERE"
 
 ## Linux
 

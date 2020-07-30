@@ -1,21 +1,19 @@
 {
   "name": "backup-to-cloud",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Schedules file backups and uploads.",
   "main": "app.js",
   "scripts": {
     "install-windows": "node ./installers/windows/install.js",
     "uninstall-windows": "node ./installers/windows/uninstall.js"
   },
-  "author": "Arsham Eslami",
+  "author": "Asarama",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/storage": "^3.1.0",
-    "backup": "^1.1.0",
-    "node-schedule": "^1.3.1",
-    "node-windows": "^0.1.14",
-    "nodemailer": "^4.7.0",
-    "tar-fs": "^1.16.3",
+    "@google-cloud/storage": "^5.1.2",
+    "node-schedule": "^1.3.2",
+    "nodemailer": "^6.4.11",
+    "tar-fs": "^2.1.0",
     "zlib": "^1.0.5"
   }
 }
