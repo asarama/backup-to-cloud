@@ -1,11 +1,13 @@
 # Intro
 This app archives a set of directories and uploads them to a cloud storage provider. This is a work in progress...
-- File archiving (done)
-- Improve archive file names to include directory names (done)
+
+## TODO
+- ~~File archiving~~
+- ~~Improve archive file names to include directory names~~
 - Encrypting
 - Update logging
-- Scheduling (done)
-- Uploading (done)
+- ~~Scheduling~~
+- ~~Uploading~~
 - Removing old backups
 - Incremental backups
 - Support for multiple storage providers
@@ -22,7 +24,7 @@ This app archives a set of directories and uploads them to a cloud storage provi
 ## Windows
 
 Run `npm run install-windows`
-This will install a service called "Backup 2 Cloud - {YOUR SERVICE NAME HERE}"
+This will install a service called "Backup to Cloud - {YOUR SERVICE NAME HERE}"
 
 ## Linux
 

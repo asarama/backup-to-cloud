@@ -14,9 +14,6 @@ class FileSystem {
 	/**
 	* Checks if all files and directories in directory are readable.
 	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2018 Third Hand
-	*
 	* @param {String} pathToDirectory
 	* 	Absolute path to directory to evaluate.
 	*
@@ -97,9 +94,6 @@ class FileSystem {
 	/**
 	* Checks if an entity at a path is a directory or a file.
 	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2018 Third Hand
-	*
 	* @param {String} path
 	* 	Absolute path to entity to evaluate.
 	*
@@ -120,9 +114,6 @@ class FileSystem {
 
 	/**
 	* Check if a file can be read.
-	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2018 Third Hand
 	*
 	* @param {String} path
 	* 	Absolute path to file to evaluate.
@@ -149,9 +140,6 @@ class FileSystem {
 
 	/**
 	* Convert a directory and it's nested files into a compressed file in the archives directory.
-	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2018 Third Hand
 	*
 	* @param {String} path
 	* 	Absolute path to directory to archive.

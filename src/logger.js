@@ -30,9 +30,6 @@ class Logger {
     
     /**
     * Logs a message to an error.log file
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     * 
     * @param {string} message
     *   Message string to log
@@ -47,9 +44,6 @@ class Logger {
     /**
     * Logs a message to an info.log file
     *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
-    *
     * @param {string} message
     *   Message string to log
     *
@@ -62,9 +56,6 @@ class Logger {
 
     /**
     * Logs a message to a custom filename.
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     *
     * @param {string} filename
     *   Name of the file to write to.
@@ -85,9 +76,6 @@ class Logger {
     * Here we prepend a time stamp in the format HH:mm:ss to the message, and
     * a date stamp to the file name in the format YYYY-MM-DD-
     * We also convert the message to a string
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     *
     * @param {String} fileName
     *   Name of file to write to.
@@ -113,9 +101,6 @@ class Logger {
 
     /**
     * Send an email to our log email.
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     *
     * @param {string} message
     *   Message string to email
@@ -148,9 +133,6 @@ class Logger {
     
     /**
     * Takes a standard date format and converts it to a date stamp (YYYY-MM-DD) and a time stamp (HH:mm:ss).
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     *
     * @param {Date} date
     *   Date object to convert
@@ -185,9 +167,6 @@ class Logger {
     
     /**
     * Converts any variable type to a string
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     * 
     * @param {mixed} message
     *   Message to convert to string
@@ -243,9 +222,6 @@ class Logger {
 
     /**
     * Find all log files that are older than 30 days and delete them
-    *
-    * @author: Arsham Eslami (arshameslami@gmail.com)
-    * @copyright 2018 Third Hand
     *
     * @return {void}
     */

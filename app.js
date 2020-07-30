@@ -7,18 +7,15 @@ const
 	fs = require('fs'),
 	schedule = require('node-schedule'),
 	config = require('./config'),
-	logger = new (require(`./logger`))({}),
-	helpers = new (require(`./helpers`))(),
-	google = new (require(`./cloud/google`))(config),
-	fileSystem = new (require(`./fileSystem`))(helpers);
+	logger = new (require(`./src/logger`))({}),
+	helpers = new (require(`./src/helpers`))(),
+	google = new (require(`./src/cloud/google`))(config),
+	fileSystem = new (require(`./src/fileSystem`))(helpers);
 
 
 /**
 * Makes sure we have access to a set of directories defined in our config file
 * then archives them. 
-*
-* @author: Arsham Eslami (arshameslami@gmail.com)
-* @copyright 2019 Third Hand
 */
 
 function init() {
@@ -72,9 +69,6 @@ function init() {
 * 1) Takes a set of paths to directories and compresses them.
 * 2) Combines all archives into one file.
 * 3) Uploads to cloud service.
-*
-* @author: Arsham Eslami (arshameslami@gmail.com)
-* @copyright 2018 Third Hand
 *
 * @param {Array[String]} directories
 * 	Absolute path to directories to archive.

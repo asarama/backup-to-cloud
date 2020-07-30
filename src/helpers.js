@@ -7,9 +7,6 @@ class Helpers {
 	/**
 	* Used to create a promise that resolves right away.
 	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2018 Third Hand
-	*
 	* @return {Promise} 
 	*	A promise that will always resolve.
 	*/
@@ -22,9 +19,6 @@ class Helpers {
 
 	/**
 	* Used to keep track of failed promises in concurrent calls without throwing errors.
-	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2018 Third Hand
 	*
 	* @param {Promise} promise
 	* 	Request promise to track.
@@ -46,20 +40,17 @@ class Helpers {
 	};
 
 	/**
-	* Used to convert a callback funtion to a promise.
-	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2019 Third Hand
+	* Used to convert a callback function to a promise.
 	*
 	* @param {Object} thisRef
-	* 	Parent class refence.
+	* 	Parent class reference.
 	* @param {Object} functionRef
 	* 	Function to convert.
 	* @param {Array[any]} parameters
 	* 	Input parameters for function call.
 	*
 	* @return {Promise} 
-	*	Returns a promise representation of the fuction reference.
+	*	Returns a promise representation of the function reference.
 	*/
 
 	callBackToPromise(thisRef, functionRef, parameters) {
@@ -82,9 +73,6 @@ class Helpers {
 	/**
 	* Given a full absolute or relative path find the name of the file
 	* or directory at the end.
-	*
-	* @author: Arsham Eslami (arshameslami@gmail.com)
-	* @copyright 2019 Third Hand
 	*
 	* @param {String} fullPath
 	* 	Can be absolute or relative.
