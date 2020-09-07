@@ -1,30 +1,32 @@
 'use strict';
-const config = require('./config');
+const config = require('../config');
 const nodemailer = require('nodemailer');
 const schedule = require('node-schedule');
 const fs = require('fs');
-const { timeStamp } = require('console');
 
 //This class is used to log information to a set of log files
 class Logger {
     
     constructor(options) {
+
+        if (typeof options === 'undefined') {
+            options = {};
+        }
         
-        this.fs = require('fs');
-        this.fileDirectory = options.fileDirectory || (`${__dirname}/logs`);
-        this.serviceName = options.serviceName || config.service.name;
+        this.file_directory = options.file_directory || (`${__dirname}/logs`);
+        this.service_name = options.service_name || config.service.name;
 
         if (config.service.maintainer.email.enabled) {
-            this.emailTransporter = nodemailer.createTransport(config.service.maintainer.email);
+            this.email_transporter = nodemailer.createTransport(config.service.maintainer.email);
         }
 
         //Schedule delete old scripts function once everyday
-        this.deleteOldLogsJob = schedule.scheduleJob({
+        this.delete_old_logs_job = schedule.scheduleJob({
             hour: 11,
             minute: 0
-        }, () => {this.deleteOldLogs()});
+        }, () => {this.delete_old_logs()});
 
-        this.deleteIgnoreFiles = [".gitignore"];
+        this.delete_ignore_files = [".gitignore"];
 
     }
     
@@ -41,8 +43,8 @@ class Logger {
     * @return {void}
     */
    
-    error(message) {
-        this.writeOut('error.log', message);
+    async error(message) {
+        await this.write_out('error.log', message);
     }
     
     /**
@@ -54,14 +56,14 @@ class Logger {
     * @return {void}
     */
 
-    info(message) {
-        this.writeOut('info.log', message);
+    async info(message) {
+        await this.write_out('info.log', message);
     }
 
     /**
-    * Logs a message to a custom filename.
+    * Logs a message to a custom file_name.
     *
-    * @param {string} filename
+    * @param {string} file_name
     *   Name of the file to write to.
     * @param {string} message
     *   Message string to log.
@@ -69,8 +71,8 @@ class Logger {
     * @return {void}
     */
 
-    custom(filename, message) {
-        this.writeOut(filename + '.log', message);
+    async custom(file_name, message) {
+        await this.write_out(file_name + '.log', message);
     }
 
     /**
@@ -81,7 +83,7 @@ class Logger {
     * a date stamp to the file name in the format YYYY-MM-DD-
     * We also convert the message to a string
     *
-    * @param {String} fileName
+    * @param {String} file_name
     *   Name of file to write to.
     * @param {String} message
     *   Message string to log.
@@ -89,15 +91,23 @@ class Logger {
     * @return {void}
     */
 
-    writeOut(fileName, message) {
+    async write_out(file_name, message) {
 
-        const dateObject = this.formatDate(new Date());
+        const 
+            date_object = this.format_date(new Date()),
+            log_file_path = this.file_directory + "/" + file_name + "-" + date_object.date_stamp;
 
 		try {
-			this.fs.appendFileSync(
-				this.fileDirectory + "/" + fileName + "-" + dateObject.dateStamp, 
-				dateObject.timeStamp + " " + this.messageToString(message) + "\r\n"
-			);
+
+            if (await this.file_exists(log_file_path) === false) {
+                await fs.promises.writeFile(log_file_path, "");
+            }
+
+            await fs.promises.appendFile(
+                log_file_path,
+                date_object.time_stamp + " " + this.message_to_string(message) + "\r\n"
+            );
+
 		} catch (error) {
 			throw error;
 		}
@@ -120,16 +130,16 @@ class Logger {
             return
         }
 
-        let mailOptions = {
+        let mail_options = {
             from: config.service.maintainer.email.auth.user,
             to: config.service.maintainer.email.auth.pass,
-            subject: 'Message from Service: ' + this.serviceName,
+            subject: 'Message from Service: ' + this.service_name,
             text: message,
             html: '<p>' + message + '</p>'
         };
 
         // send mail with defined transport object
-        this.emailTransporter.sendMail(mailOptions, (error, info) => {
+        this.email_transporter.sendMail(mail_options, (error, info) => {
             if (error) {
                 return console.error(error);
             }
@@ -148,10 +158,10 @@ class Logger {
     *   Date object to convert
     *
     * @return {Object}
-    *  Object with two keys dateStamp, and timeStamp
+    *  Object with two keys date_stamp, and time_stamp
     */
    
-    formatDate(date) {
+    format_date(date) {
         
         //Pad a number to make it two digits
         function pad(number) {
@@ -161,17 +171,17 @@ class Logger {
             return number;
         };
 
-        const dateStamp = date.getUTCFullYear() +
+        const date_stamp = date.getUTCFullYear() +
             '-' + pad(date.getUTCMonth() + 1) +
             '-' + pad(date.getUTCDate());
 
-        const timeStamp = pad(date.getUTCHours()) +
+        const time_stamp = pad(date.getUTCHours()) +
             ':' + pad(date.getUTCMinutes()) +
             ':' + pad(date.getUTCSeconds());
 
         return {
-            dateStamp: dateStamp,
-            timeStamp: timeStamp
+            date_stamp,
+            time_stamp
         };
     }
     
@@ -184,14 +194,14 @@ class Logger {
     * @return {string} converted message to string
     */ 
     
-    messageToString(message) {
+    message_to_string(message) {
         
         switch (typeof message) {
             case "object":
                 message = JSON.stringify(message, this.censor(message));
                 break;
             case "array":
-                message.map((item => this.messageToString(item)));
+                message.map((item => this.message_to_string(item)));
                 break;
         }
         
@@ -236,33 +246,33 @@ class Logger {
     * @return {void}
     */
 
-    deleteOldLogs() {
+    delete_old_logs() {
 
         //Create a new date for 30 days ago
-        const deleteOlderThanDateStamp = new Date(new Date() - 1000 * 60 * 60 * 24 * 30);
+        const delete_older_than_date_stamp = new Date(new Date() - 1000 * 60 * 60 * 24 * 30);
 
         //Get all info.log and error.log files
-        fs.readdir(this.fileDirectory, (error, files) => {
+        fs.readdir(this.file_directory, (error, files) => {
 
             if (error) {
                 throw error;
             }
 
-            files.forEach(fileName => {
+            files.forEach(file_name => {
 
-                //ignore the .gitignore and other permanent log files defined in deleteIgnoreFiles
-                if (!this.deleteIgnoreFiles.includes(fileName)) {
+                //ignore the .gitignore and other permanent log files defined in delete_ignore_files
+                if (!this.delete_ignore_files.includes(file_name)) {
                     try {
-                        const fileDateString = fileName.substring(fileName.length - 10, fileName.length);
+                        const file_date_string = file_name.substring(file_name.length - 10, file_name.length);
 
                         //Make sure we have a string that can be turned into a valid date
-                        if (!isNaN(Date.parse(fileDateString))) {
+                        if (!isNaN(Date.parse(file_date_string))) {
 
-                            const fileDate = new Date(fileDateString);
+                            const file_date = new Date(file_date_string);
 
                             //If file date is older delete it
-                            if ((fileDate - deleteOlderThanDateStamp) < 0) {
-                                fs.unlink(this.fileDirectory + "/" + fileName, error => {
+                            if ((file_date - delete_older_than_date_stamp) < 0) {
+                                fs.unlink(this.file_directory + "/" + file_name, error => {
                                     if (error) {
                                         throw error;
                                     }
@@ -276,6 +286,17 @@ class Logger {
             });
         });
     }
+
+    async file_exists(path_to_file) {
+        try {
+            const file_stats = await fs.promises.lstat(path_to_file);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+
 }
 
 module.exports = Logger;

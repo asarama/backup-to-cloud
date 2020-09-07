@@ -9,13 +9,13 @@ class Google {
     constructor(config) {
         // Creates a client
         this.storage = new Storage();
-        this.bucketName = config.google.bucket;
+        this.bucket_name = config.google.bucket;
     }
 
-    async uploadFile(filename) {
+    async upload_file(file_name) {
 
         // Uploads a file to a bucket
-        return await this.storage.bucket(this.bucketName).upload(filename, {
+        return await this.storage.bucket(this.bucket_name).upload(file_name, {
             // Support for HTTP requests made with `Accept-Encoding: gzip`
             gzip: true,
             resumable: false,

@@ -4,11 +4,12 @@ This app archives a set of directories and uploads them to a cloud storage provi
 ## TODO
 - ~~File archiving~~
 - ~~Improve archive file names to include directory names~~
-- Encrypting
-- Update logging
 - ~~Scheduling~~
 - ~~Uploading~~
+- Support new structure
 - Removing old backups
+- Encrypting
+- Update logging
 - Incremental backups
 - Support for multiple storage providers
 - Support for local storage
@@ -23,9 +24,13 @@ This app archives a set of directories and uploads them to a cloud storage provi
 
 ## Windows
 
-``` npm i node-windows```
+```
+npm i node-windows
+```
 
-```npm run install-windows```
+```
+npm run install-windows
+```
 
 This will install a service called "Backup to Cloud - YOUR_SERVICE_NAME_HERE"
 

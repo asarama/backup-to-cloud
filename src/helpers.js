@@ -11,7 +11,7 @@ class Helpers {
 	*	A promise that will always resolve.
 	*/
 	
-	emptyPromise() {
+	empty_promise() {
 		return new Promise((resolve, reject) => {
 			resolve();
 		});
@@ -42,9 +42,9 @@ class Helpers {
 	/**
 	* Used to convert a callback function to a promise.
 	*
-	* @param {Object} thisRef
+	* @param {Object} this_ref
 	* 	Parent class reference.
-	* @param {Object} functionRef
+	* @param {Object} function_ref
 	* 	Function to convert.
 	* @param {Array[any]} parameters
 	* 	Input parameters for function call.
@@ -53,7 +53,7 @@ class Helpers {
 	*	Returns a promise representation of the function reference.
 	*/
 
-	callBackToPromise(thisRef, functionRef, parameters) {
+	call_back_to_promise(this_ref, function_ref, parameters) {
 		return new Promise((resolve, reject) => {
 	
 			// Add the callback handler
@@ -66,7 +66,7 @@ class Helpers {
 				resolve(result);
 			});
 	
-			functionRef.apply(thisRef, parameters);
+			function_ref.apply(this_ref, parameters);
 		});
 	}
 
@@ -74,29 +74,29 @@ class Helpers {
 	* Given a full absolute or relative path find the name of the file
 	* or directory at the end.
 	*
-	* @param {String} fullPath
+	* @param {String} full_path
 	* 	Can be absolute or relative.
 	*
 	* @return {String} 
 	*	The name of the file or directory at the end of the path.
 	*/
 
-	endEntityInPath(fullPath) {
+	end_entity_in_path(full_path) {
 
-		let pathToStrip = fullPath;
+		let path_to_strip = full_path;
 
 		// Remove trailing / or \
-		const lastChar = pathToStrip[pathToStrip.length - 1];
-		if (lastChar === '/' || lastChar === '\\') {
-			pathToStrip = pathToStrip.slice(0, -1);
+		const last_char = path_to_strip[path_to_strip.length - 1];
+		if (last_char === '/' || last_char === '\\') {
+			path_to_strip = path_to_strip.slice(0, -1);
 		}
 
 		// Remove all prepended directories
-		let splitForwardsBracketPath = pathToStrip.split('/');
-		let splitBackwardsBracketPath = splitForwardsBracketPath[splitForwardsBracketPath.length - 1].split('\\')		
-		const endEntity = splitBackwardsBracketPath[splitBackwardsBracketPath.length - 1]
+		let split_forwards_bracket_path = path_to_strip.split('/');
+		let split_backwards_bracket_path = split_forwards_bracket_path[split_forwards_bracket_path.length - 1].split('\\')		
+		const end_entity = split_backwards_bracket_path[split_backwards_bracket_path.length - 1]
 
-		return 	endEntity;
+		return 	end_entity;
 
 	}
 	

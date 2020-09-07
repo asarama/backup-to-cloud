@@ -7,10 +7,12 @@ const
 	fs = require('fs'),
 	schedule = require('node-schedule'),
 	config = require('./config'),
-	logger = new (require(`./src/logger`))({}),
+	logger = new (require(`./src/logger`))({
+		file_directory: `${__dirname}/logs`
+	}),
 	helpers = new (require(`./src/helpers`))(),
-	google = new (require(`./src/cloud/google`))(config),
-	fileSystem = new (require(`./src/fileSystem`))(helpers);
+	// google = new (require(`./src/cloud/google`))(config),
+	file_system = new (require(`./src/file_system`))(helpers);
 
 
 /**
@@ -18,48 +20,48 @@ const
 * then archives them. 
 */
 
-function init() {
+const init = async () => {
 
-	const directoriesToBackup = config.backup.directories;
+	const directories_to_backup = config.backup.directories;
 
 	console.log(`Will be backing up:`)
-	console.log(directoriesToBackup);
+	console.log(directories_to_backup);
 
 	// Make sure we have read access to the directories we need to backup
-	let checkDirectoryAccessRequests = [];
-	directoriesToBackup.forEach(directory => {
-		checkDirectoryAccessRequests.push(fileSystem.checkDirectoryAccess(directory))
+	let check_directory_access_requests = [];
+	directories_to_backup.forEach(directory => {
+		check_directory_access_requests.push(file_system.check_directory_access(directory))
 	});
 
-	Promise.all(checkDirectoryAccessRequests).then(directoryAccessResponses => {
+	Promise.all(check_directory_access_requests).then(async (directory_access_responses) => {
 		
 		// Make sure we do not have any unaccessible files
-		let filesWeCanNotAccess = [];
-		directoryAccessResponses.forEach(directoryAccessResponse => {
-			filesWeCanNotAccess = filesWeCanNotAccess.concat(directoryAccessResponse.filesWeCanNotAccess);
+		let files_we_can_not_access = [];
+		directory_access_responses.forEach(directory_access_response => {
+			files_we_can_not_access = files_we_can_not_access.concat(directory_access_response.files_we_can_not_access);
 		});
 		
 		// If we find any files we can not access abort the operation
-		if (filesWeCanNotAccess.length > 0) {
-			console.log(`Can not start compression until read access is avaliable for:`);
-			console.log(filesWeCanNotAccess);
+		if (files_we_can_not_access.length > 0) {
+			console.log(`Can not start compression until read access is available for:`);
+			console.log(files_we_can_not_access);
 
-			logger.error(`Some files were not accessable: ${filesWeCanNotAccess}`);
+			await logger.error(`Some files were not accessible: ${files_we_can_not_access}`);
 			process.exit(1);
 		}
 		
 		// TO DO: Convert this process and rest of promise chain into a scheduled task
-		return archiveDirectories(directoriesToBackup);
+		return archive_directories(directories_to_backup);
 
-	}).then(archiveResponse => {
+	}).then(async (archive_response) => {
 
 		console.log(`Archiving complete!`);
-		console.log(archiveResponse);
+		console.log(archive_response);
 		
-	}).catch(error => {
+	}).catch(async (error) => {
 		
 		console.error(error);
-		logger.error(`Undocumented error: ${error}`);
+		await logger.error(`Undocumented error: ${error}`);
 		process.exit(1);
 		
 	})
@@ -74,85 +76,87 @@ function init() {
 * 	Absolute path to directories to archive.
 */
 
-function archiveDirectories(directories) {
+function archive_directories(directories) {
 	return new Promise((resolve, reject) => {
 		
 		let 
-			archiveRequests = [],
-			archiveFiles = [],
-			archiveDirectoryName,
-			finalArchiveFilename;
+			archive_requests = [],
+			archive_files = [],
+			archive_directory_name,
+			final_archive_file_name;
 
 		directories.forEach(directory => {
-			archiveRequests.push(fileSystem.archive(directory))
+			archive_requests.push(file_system.archive(directory))
 		});
 
-		Promise.all(archiveRequests.map(helpers.reflect)).then(archiveResponses => {
+		Promise.all(archive_requests.map(helpers.reflect)).then(archive_responses => {
 
-			archiveResponses.forEach(archiveResponse => {
-				if (archiveResponse.resolved) {
-					archiveFiles.push(archiveResponse.value);
+			archive_responses.forEach(archive_response => {
+				if (archive_response.resolved) {
+					archive_files.push(archive_response.value);
 				}
 			});
 
-			archiveDirectoryName = `${new Date().getTime()}`;
+			archive_directory_name = `${new Date().getTime()}`;
 
 			// Combine all archives into one file
 			// We should store all archives from a backup session into one directory
 
 			// Take all archived files and store them in one directory
-			return helpers.callBackToPromise(fs, fs.mkdir, [
-				`${__dirname}/archives/${archiveDirectoryName}`, 
+			return helpers.call_back_to_promise(fs, fs.mkdir, [
+				`${__dirname}/archives/${archive_directory_name}`, 
 				{ recursive: true }
 			]);
 
 		}).then(() => {
 
 			// Move files into directory
-			let copyFileRequests = [];
-			archiveFiles.forEach(archiveFile => {
-				copyFileRequests.push(helpers.callBackToPromise(fs, fs.copyFile, [
-					`${__dirname}/archives/${archiveFile}`,
-					`${__dirname}/archives/${archiveDirectoryName}/${archiveFile}`
+			let copy_file_requests = [];
+			archive_files.forEach(archive_file => {
+				copy_file_requests.push(helpers.call_back_to_promise(fs, fs.copyFile, [
+					`${__dirname}/archives/${archive_file}`,
+					`${__dirname}/archives/${archive_directory_name}/${archive_file}`
 				]));
 			});
 
-			return Promise.all(copyFileRequests.map(helpers.reflect));
+			return Promise.all(copy_file_requests.map(helpers.reflect));
 
 		}).then(() => {
 
-			finalArchiveFilename = `backup-${archiveDirectoryName}.tar.gz`;
+			final_archive_file_name = `backup-${archive_directory_name}.tar.gz`;
 
 			console.log("Archiving old files");
 			// Now archive this directory
-			return fileSystem.archiveRaw(`${__dirname}/archives/${archiveDirectoryName}`, `${__dirname}/archives/${finalArchiveFilename}`);
+			return file_system.archive_raw(`${__dirname}/archives/${archive_directory_name}`, `${__dirname}/archives/${final_archive_file_name}`);
 
 		}).then(() => {
 
 			// Remove substep archive files
-			let deleteFileRequests = [];
-			archiveFiles.forEach(archiveFile => {
-				deleteFileRequests.push(helpers.callBackToPromise(fs, fs.unlink, [
-					`${__dirname}/archives/${archiveDirectoryName}/${archiveFile}`
+			let delete_file_requests = [];
+			archive_files.forEach(archive_file => {
+				delete_file_requests.push(helpers.call_back_to_promise(fs, fs.unlink, [
+					`${__dirname}/archives/${archive_directory_name}/${archive_file}`
 				]));
-				deleteFileRequests.push(helpers.callBackToPromise(fs, fs.unlink, [
-					`${__dirname}/archives/${archiveFile}`
+				delete_file_requests.push(helpers.call_back_to_promise(fs, fs.unlink, [
+					`${__dirname}/archives/${archive_file}`
 				]));
 			});
 
-			return Promise.all(deleteFileRequests.map(helpers.reflect));
+			return Promise.all(delete_file_requests.map(helpers.reflect));
 
 		}).then(() => {
 
 			// Remove substep archive directory
-			return helpers.callBackToPromise(fs, fs.rmdir, [
-				`${__dirname}/archives/${archiveDirectoryName}`
+			return helpers.call_back_to_promise(fs, fs.rmdir, [
+				`${__dirname}/archives/${archive_directory_name}`
 			]);
 
 		}).then(() => {
 
-			// Then start upload
-			return google.uploadFile(`${__dirname}/archives/${finalArchiveFilename}`);
+			// Start upload
+			console.log("Uploading to targets");
+			// Iterate through targets and run upload commands
+			// return google.upload_file(`${__dirname}/archives/${final_archive_file_name}`);
 			
 			
 		}).then(resolve).catch(reject);
@@ -160,6 +164,7 @@ function archiveDirectories(directories) {
 }
 
 // Setup scheduled task
+// TODO: Test scheduling works with async function
 const 
 	job = schedule.scheduleJob(config.backup.schedule, init);
 	
