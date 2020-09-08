@@ -34,7 +34,7 @@ class FileSystem {
 				// Create requests for each entity to test if it is a file or a directory 
 				let check_if_directory_requests = [];
 				contents.forEach(content => {
-					check_if_directory_requests.push(this.check_if_directory(`${path_to_directory}\\${content.name}`));
+					check_if_directory_requests.push(this.check_if_directory(`${path_to_directory}${content.name}`));
 				})
 				
 				return Promise.all(check_if_directory_requests);
@@ -43,14 +43,14 @@ class FileSystem {
 				
 				let access_requests = [];
 				
-				// If the entity is a directory run check_directory_access
+				// If the entity is a directory run check_directory_access to test nested directories
 				is_directory_responses.forEach(file => {
 					if (file.is_directory) {
 						
 						console.log(`Found nested directory:`);
-						console.log(`${file.path}\\`);
+						console.log(file.path);
 						
-						access_requests.push(this.check_directory_access(`${file.path}\\`));
+						access_requests.push(this.check_directory_access(`${file.path}/`));
 						
 					} else {
 						
@@ -104,7 +104,7 @@ class FileSystem {
 			fs.promises.stat(path).then(fileStats => {
 				resolve({
 					path,
-					is_directory: fileStats.is_directory()
+					is_directory: fileStats.isDirectory()
 				})
 			}).catch(reject);
 		});
@@ -151,9 +151,17 @@ class FileSystem {
 		// TODO: repetitive, make into helper function
 		const 
 			path_hash = crypto.createHmac('sha256', path).update(path).digest('hex').substr(0, 12),
-			last_directory_in_path = this.helpers.end_entity_in_path(path),
-			archive_file_name = `${new Date().getTime()}-${path_hash}-${last_directory_in_path}.tar.gz`,
-			write_out_path = `${__dirname}/archives/${archive_file_name}`;
+			last_directory_in_path = this.helpers.end_entity_in_path(path)
+
+		let archive_file_name = `${new Date().getTime()}-${path_hash}`
+
+		if (last_directory_in_path !== ".") {
+			archive_file_name += `-${last_directory_in_path}`
+		}
+
+		archive_file_name += `.tar.gz`
+			
+		const write_out_path = `${__dirname}/../archives/${archive_file_name}`;
 
 		return this.archive_raw(path, write_out_path);
 	}
@@ -161,14 +169,11 @@ class FileSystem {
 	archive_raw(read_path, out_path) {
 		return new Promise((resolve, reject) => {
 
-			// TODO: repetitive, make into helper function
 			const 
-				path_hash = crypto.createHmac('sha256', read_path).update(read_path).digest('hex').substr(0, 12),
-				last_directory_in_path = this.helpers.end_entity_in_path(read_path),
-				archive_file_name = `${new Date().getTime()}-${path_hash}-${last_directory_in_path}.tar.gz`,
+				archive_file_name = out_path.split("/")[out_path.split("/").length - 1],
 				file_write_stream = fs.createWriteStream(out_path);
 
-			tar.pack(`./${read_path}`)
+			tar.pack(read_path)
 				.pipe(zlib.Gzip())
 				.pipe(file_write_stream);
 
@@ -182,7 +187,7 @@ class FileSystem {
 	}
 
 	// Depreciated for now
-	// Moving onto fstream solution
+	// Moving onto stream solution
 	get_all_files_and_directories(starting_path, current_directory_map) {
 		return new Promise((resolve, reject) => {
 			
