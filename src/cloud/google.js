@@ -2,20 +2,21 @@
 const 
     {Storage} = require('@google-cloud/storage');
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS = `${__dirname}/google.json`;
-
 class Google {
 
     constructor(config) {
         // Creates a client
-        this.storage = new Storage();
-        this.bucket_name = config.google.bucket;
+        this.storage = new Storage()
+        this.bucket = config.bucket
+        this.json_path = config.json_path
     }
 
     async upload_file(file_name) {
 
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = `${__dirname}/${this.json_path}`;
+
         // Uploads a file to a bucket
-        return await this.storage.bucket(this.bucket_name).upload(file_name, {
+        return await this.storage.bucket(this.bucket).upload(file_name, {
             // Support for HTTP requests made with `Accept-Encoding: gzip`
             gzip: true,
             resumable: false,

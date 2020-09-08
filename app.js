@@ -11,7 +11,6 @@ const
 		file_directory: `${__dirname}/logs`
 	}),
 	helpers = new (require(`./src/helpers`))(),
-	// google = new (require(`./src/cloud/google`))(config),
 	file_system = new (require(`./src/file_system`))(helpers);
 
 
@@ -142,9 +141,35 @@ const archive_directories = async (directories) => {
 	await fs.promises.rmdir(`${__dirname}/archives/${archive_directory_name}`)
 
 	// Start upload
-	console.log("Uploading to targets");
+	console.log("Uploading to targets")
 	// Iterate through targets and run upload commands
 	// return google.upload_file(`${__dirname}/archives/${final_archive_file_name}`);
+
+	let upload_file_requests = []
+	config.backup.targets.forEach(target => {
+
+		let provider_instance
+		switch(target.provider) {
+			case "google":
+				provider_instance = new (require("./src/cloud/google"))(target)
+				break
+			default:
+				throw new Error(`Could not find class for provider ${target.provider}`)
+		}
+
+		upload_file_requests.push(provider_instance.upload_file(`${__dirname}/archives/${final_archive_file_name}`))
+
+	})
+
+	const upload_file_responses = await Promise.all(upload_file_requests.map(helpers.reflect));
+	upload_file_responses.forEach(upload_file_response => {
+		if (upload_file_response.resolved === false) {
+			console.log("Upload failed")
+			console.log(upload_file_response.value)
+		}
+	})
+
+	console.log("Uploads complete");
 
 }
 

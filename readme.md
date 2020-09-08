@@ -48,5 +48,5 @@ From [here](https://www.npmjs.com/package/@google-cloud/storage)
 2) Enable billing for your project.
 3) Enable the Google Cloud Storage API.
 4) Set up authentication with a service account so you can access the API from your local workstation.
-5) Rename your credentials JSON file to google,json and place it in the cloud directory.
+5) Rename your credentials JSON file to google.json and place it in the cloud directory.
 
