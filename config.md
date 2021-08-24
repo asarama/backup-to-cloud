@@ -20,6 +20,8 @@ Use this document to gain insight into our config parameters.
 
 - backup.schedule (String): CRON style timing string. For more information checkout the docs [here](https://www.npmjs.com/package/node-schedule#cron-style-scheduling).
 
+- backup.keep_for (Integer): Number of days to keep backup files for.
+
 - backup.directories (Array\<String\>): Array of paths to directories which need to be backed up.
 
 - backup.targets (Array\<Provider\>): Array of Provider objects.

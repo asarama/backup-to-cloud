@@ -17,6 +17,7 @@ module.exports = {
     },
     backup: {
         schedule: "30 3 * * *",
+        keep_for: 30,
         directories: [
             "./"
         ],

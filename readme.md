@@ -6,7 +6,7 @@ This app archives a set of directories and uploads them to a cloud storage provi
 - ~~Improve archive file names to include directory names~~
 - ~~Scheduling~~
 - ~~Uploading~~
-- Support new structure
+- ~~Support new structure~~
 - Removing old backups
 - Encrypting
 - Update logging

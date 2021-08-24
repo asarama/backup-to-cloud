@@ -21,6 +21,8 @@ const
 
 const init = async () => {
 
+	await delete_old_backups()
+
 	const directories_to_backup = config.backup.directories;
 
 	console.log(`Will be backing up:`)
@@ -171,6 +173,19 @@ const archive_directories = async (directories) => {
 
 	console.log("Uploads complete");
 
+}
+
+/**
+* 1) Delete old local backups
+* 2) Delete old cloud backups
+*/
+
+const delete_old_backups = async () => {
+
+	// Get all backup files
+	const local_archives_directory = `${__dirname}/archives/`
+
+	
 }
 
 // Setup scheduled task
